@@ -7,14 +7,24 @@ on:
 
 permissions:
   contents: write
-  
+
 jobs:
   release:
     name: Build and Release
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        preset: [linux-release, x64-release]
+        exclude:
+          - os: windows-latest
+            preset: linux-release
+          - os: ubuntu-latest
+            preset: x64-release
 
     steps:
-      - name: Checkout source code
+      - name: Checkout source
         uses: actions/checkout@v3
 
       - name: Set up CMake
@@ -22,26 +32,55 @@ jobs:
         with:
           cmake-version: '3.25.2'
 
-      - name: Install Ninja
-        run: sudo apt-get update && sudo apt-get install -y ninja-build
+      - name: Install Ninja + Zip tools
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build zip
 
-      - name: Configure with CMake
-        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Configure with CMake preset
+        run: cmake --preset=${{ matrix.preset }}
+        shell: bash
 
-      - name: Build Tiny BPE Trainer
-        run: cmake --build build
+      - name: Determine build config
+        id: config
+        run: |
+          if [[ "${{ matrix.preset }}" == *release* ]]; then
+            echo "config=Release" >> $GITHUB_OUTPUT
+          else
+            echo "config=Debug" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
 
-      - name: Create GitHub Release
+      - name: Build project
+        run: |
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            cmake --build out/build/${{ matrix.preset }} --config ${{ steps.config.outputs.config }}
+          else
+            cmake --build out/build/${{ matrix.preset }}
+          fi
+        shell: bash
+
+      - name: Rename and zip binary
+        run: |
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            cp out/build/${{ matrix.preset }}/${{ steps.config.outputs.config }}/Tiny-BPE-Trainer.exe Tiny-BPE-Trainer-windows.exe
+            powershell -Command "Compress-Archive -Path Tiny-BPE-Trainer-windows.exe -DestinationPath Tiny-BPE-Trainer-windows.zip"
+          else
+            cp out/build/${{ matrix.preset }}/Tiny-BPE-Trainer Tiny-BPE-Trainer-linux
+            zip Tiny-BPE-Trainer-linux.zip Tiny-BPE-Trainer-linux
+          fi
+        shell: bash
+
+      - name: Upload zipped binary
         uses: softprops/action-gh-release@v1
         with:
-          generate_release_notes: true
+          files: Tiny-BPE-Trainer-*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Release Asset
+      - name: Create GitHub Release (only once)
+        if: matrix.os == 'ubuntu-latest'
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            build/Tiny-BPE-Trainer
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
