@@ -151,9 +151,9 @@ Natural language processing enables computers to understand human language.
 
 Want to train on real world text like **IMDB reviews**, **Wikipedia**, or **news articles**?
 
-You can use this Python script to download datasets from [HuggingFace Datasets Hub](https://huggingface.co/datasets), and export them into plain `.txt` or `.jsonl` format that works directly with Tiny BPE Trainer.
+You can use the Python script `download_dataset.py` to download datasets from [HuggingFace Datasets Hub](https://huggingface.co/datasets), and export them into plain `.txt` or `.jsonl` format that works directly with Tiny BPE Trainer.
 
-Don't forget to install the requirements:
+Install the requirements first:
 
 ```bash
 pip install datasets pandas pyarrow
