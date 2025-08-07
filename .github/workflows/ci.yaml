@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        preset: [linux-debug, linux-release, x64-debug, x64-release]
+        exclude:
+          - os: windows-latest
+            preset: linux-debug
+          - os: windows-latest
+            preset: linux-release
+          - os: ubuntu-latest
+            preset: x64-debug
+          - os: ubuntu-latest
+            preset: x64-release
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up CMake (3.25.2)
+        uses: jwlawson/actions-setup-cmake@v1.14
+        with:
+          cmake-version: '3.25.2'
+
+      - name: Install Ninja (Linux only)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+      - name: Configure with CMake preset
+        run: cmake --preset=${{ matrix.preset }}
+        shell: bash
+
+      - name: Determine build config (Debug or Release)
+        id: config
+        run: |
+          if [[ "${{ matrix.preset }}" == *release* ]]; then
+            echo "config=Release" >> $GITHUB_OUTPUT
+          else
+            echo "config=Debug" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+      - name: Build project
+        run: |
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            cmake --build out/build/${{ matrix.preset }} --config ${{ steps.config.outputs.config }}
+          else
+            cmake --build out/build/${{ matrix.preset }}
+          fi
+        shell: bash
+
+      - name: Run demo test
+        run: |
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            ./out/build/${{ matrix.preset }}/${{ steps.config.outputs.config }}/Tiny-BPE-Trainer.exe --demo
+          else
+            ./out/build/${{ matrix.preset }}/Tiny-BPE-Trainer --demo
+          fi
+        shell: bash
