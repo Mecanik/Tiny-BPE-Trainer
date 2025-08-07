@@ -10,7 +10,6 @@ Train your own tokenizer vocabularies compatible with HuggingFace Transformers o
 ![Header-Only](https://img.shields.io/badge/Header--only-✔️-green)
 ![No Dependencies](https://img.shields.io/badge/Dependencies-None-brightgreen)
 [![Last Commit](https://img.shields.io/github/last-commit/Mecanik/Tiny-BPE-Trainer)](https://github.com/Mecanik/Tiny-BPE-Trainer/commits/main)
-[![Stars](https://img.shields.io/github/stars/Mecanik/Tiny-BPE-Trainer?style=social)](https://github.com/Mecanik/Tiny-BPE-Trainer/stargazers)
 
 ## Features
 
