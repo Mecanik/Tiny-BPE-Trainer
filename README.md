@@ -5,7 +5,7 @@ A lightweight, header-only **Byte Pair Encoding (BPE)** trainer implemented in m
 Train your own tokenizer vocabularies compatible with HuggingFace Transformers or use them with [Modern Text Tokenizer](https://github.com/Mecanik/Modern-Text-Tokenizer) for fast, production-ready tokenization in C++.
 
 [![CI](https://github.com/Mecanik/Tiny-BPE-Trainer/actions/workflows/ci.yaml/badge.svg)](https://github.com/Mecanik/Tiny-BPE-Trainer/actions/workflows/ci.yaml)
-[![License: MIT](https://img.shields.io/github/license/Mecanik/Tiny-BPE-Trainer.svg)](https://github.com/Mecanik/Tiny-BPE-Trainer/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/github/license/Mecanik/Tiny-BPE-Trainer.svg)](https://github.com/Mecanik/Tiny-BPE-Trainer/blob/main/README.md)
 [![C++ Standard](https://img.shields.io/badge/C%2B%2B-17%20%7C%2020-blue)](#)
 ![Header-Only](https://img.shields.io/badge/Header--only-✔️-green)
 ![No Dependencies](https://img.shields.io/badge/Dependencies-None-brightgreen)
