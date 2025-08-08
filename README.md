@@ -1,4 +1,4 @@
-# Tiny BPE Trainer
+# Tiny BPE Trainer – A Fast and Lightweight BPE Trainer in C++
 
 A lightweight, header-only **Byte Pair Encoding (BPE)** trainer implemented in modern C++17/20. 
 
